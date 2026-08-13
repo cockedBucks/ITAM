@@ -1,0 +1,22 @@
+# Dependency and build folders in subdirectories
+**/node_modules/
+**/.next/
+**/build/
+**/out/
+
+# Environment files
+**/.env
+**/.env.local
+**/.env.*.local
+**/env.local
+
+# IDE and OS files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
