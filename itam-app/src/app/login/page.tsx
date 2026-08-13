@@ -5,64 +5,9 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, LogIn, Monitor, Loader2, Shield } from 'lucide-react';
-
-// Particle component for background animation
-function Particles() {
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 30 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full opacity-0"
-          style={{
-            width: Math.random() * 4 + 1 + 'px',
-            height: Math.random() * 4 + 1 + 'px',
-            background: i % 2 === 0 ? '#06B6D4' : '#14B8A6',
-            left: Math.random() * 100 + '%',
-            top: Math.random() * 100 + '%',
-            animation: `particle-float ${8 + Math.random() * 12}s linear infinite`,
-            animationDelay: `${Math.random() * 8}s`,
-            ['--tx' as string]: `${(Math.random() - 0.5) * 300}px`,
-            ['--ty' as string]: `${-200 - Math.random() * 400}px`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// Animated grid background
-function GridBackground() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(6, 182, 212, 0.3) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-        }}
-      />
-      {/* Radial glow spots */}
-      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-glow/5 rounded-full blur-[120px] animate-float" />
-      <div
-        className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-teal-glow/5 rounded-full blur-[100px] animate-float"
-        style={{ animationDelay: '3s' }}
-      />
-    </div>
-  );
-}
+import { motion, AnimatePresence } from 'framer-motion';
+import { Eye, EyeOff, LogIn, Monitor, Loader2, ShieldCheck, Mail, Lock, AlertCircle } from 'lucide-react';
+import InteractiveTechBg from '@/components/ui/InteractiveTechBg';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -109,98 +54,99 @@ export default function LoginPage() {
     }
   };
 
+  if (!mounted) return null;
+
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-oasis-950 overflow-hidden">
-      {/* Animated Backgrounds */}
-      <GridBackground />
-      <Particles />
+      {/* Interactive Canvas Background */}
+      <InteractiveTechBg />
 
-      {/* Login Card */}
-      <div
-        className={`relative z-10 w-full max-w-md mx-4 transition-all duration-700 ease-out ${
-          mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
-        }`}
+      {/* Grid Overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#020617_90%)] pointer-events-none z-1" />
+
+      {/* Login Container */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="relative z-10 w-full max-w-md mx-4"
       >
         {/* Glow behind card */}
-        <div className="absolute -inset-1 bg-gradient-to-bl from-cyan-glow/20 via-transparent to-teal-glow/20 rounded-3xl blur-xl opacity-60" />
+        <div className="absolute -inset-1 bg-gradient-to-bl from-cyan-glow via-transparent to-teal-glow rounded-3xl blur-2xl opacity-20" />
 
-        <div className="relative rounded-2xl bg-oasis-900/80 backdrop-blur-2xl border border-oasis-700/50 shadow-2xl overflow-hidden">
+        <div className="relative rounded-2xl bg-oasis-900/40 backdrop-blur-xl border border-oasis-800 shadow-2xl overflow-hidden">
           {/* Top gradient line */}
-          <div className="h-1 bg-gradient-to-l from-cyan-glow via-teal-glow to-cyan-glow" 
-               style={{ backgroundSize: '200% 100%', animation: 'gradient-shift 3s linear infinite' }} />
+          <div className="h-[2px] bg-gradient-to-l from-cyan-glow via-teal-glow to-cyan-glow" />
 
           <div className="p-8 sm:p-10">
             {/* Logo Section */}
             <div className="text-center mb-8">
-              <div
-                className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-bl from-cyan-glow to-teal-glow shadow-lg shadow-cyan-glow/25 mb-5 transition-all duration-1000 delay-300 ${
-                  mounted ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 rotate-12'
-                }`}
+              <motion.div
+                initial={{ rotate: -15, scale: 0.5, opacity: 0 }}
+                animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
+                className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-bl from-cyan-glow to-teal-glow shadow-lg shadow-cyan-glow/20 mb-5"
               >
                 <Monitor size={30} className="text-white" />
-              </div>
-              <h1
-                className={`text-2xl font-bold text-white mb-2 transition-all duration-700 delay-400 ${
-                  mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                }`}
-              >
-                Smart Oasis IT Portal
-              </h1>
-              <p
-                className={`text-sm text-oasis-400 transition-all duration-700 delay-500 ${
-                  mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                }`}
-              >
-                نظام إدارة الأصول التقنية — واحة الذكاء
-              </p>
+              </motion.div>
+              <h1 className="text-2xl font-bold text-white mb-2">Smart Oasis IT</h1>
+              <p className="text-xs text-oasis-400">نظام إدارة الأصول التقنية — واحة الذكاء</p>
             </div>
 
             {/* Error Message */}
-            {error && (
-              <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 animate-scale-in">
-                <p className="text-sm text-red-400 text-center">{error}</p>
-              </div>
-            )}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3"
+                >
+                  <AlertCircle size={18} className="text-red-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-400">{error}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Login Form */}
             <form onSubmit={handleLogin} className="space-y-5">
-              <div
-                className={`transition-all duration-700 delay-[600ms] ${
-                  mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                }`}
-              >
+              <div>
                 <label htmlFor="email" className="block text-sm font-medium text-oasis-300 mb-2">
                   البريد الإلكتروني
                 </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@smartoasis.sa"
-                  className="input-field"
-                  required
-                  autoComplete="email"
-                  dir="ltr"
-                />
+                <div className="relative">
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-oasis-500">
+                    <Mail size={18} />
+                  </span>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@smartoasis.sa"
+                    className="w-full pr-11 pl-4 py-2.5 rounded-xl bg-oasis-950 border border-oasis-800 text-oasis-200 placeholder:text-oasis-600 text-sm focus:outline-none focus:border-cyan-glow/50 focus:ring-1 focus:ring-cyan-glow/20 transition-all duration-300"
+                    required
+                    autoComplete="email"
+                    dir="ltr"
+                  />
+                </div>
               </div>
 
-              <div
-                className={`transition-all duration-700 delay-[700ms] ${
-                  mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                }`}
-              >
+              <div>
                 <label htmlFor="password" className="block text-sm font-medium text-oasis-300 mb-2">
                   كلمة المرور
                 </label>
                 <div className="relative">
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-oasis-500">
+                    <Lock size={18} />
+                  </span>
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="input-field pl-11"
+                    className="w-full pr-11 pl-11 py-2.5 rounded-xl bg-oasis-950 border border-oasis-800 text-oasis-200 placeholder:text-oasis-600 text-sm focus:outline-none focus:border-cyan-glow/50 focus:ring-1 focus:ring-cyan-glow/20 transition-all duration-300"
                     required
                     autoComplete="current-password"
                     dir="ltr"
@@ -208,7 +154,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-oasis-500 hover:text-oasis-300 transition-colors"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-oasis-500 hover:text-oasis-300 transition-colors"
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -216,11 +162,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div
-                className={`transition-all duration-700 delay-[800ms] ${
-                  mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                }`}
-              >
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={loading}
@@ -229,7 +171,7 @@ export default function LoginPage() {
                   {loading ? (
                     <>
                       <Loader2 size={20} className="animate-spin" />
-                      <span>جارِ الدخول...</span>
+                      <span>جارِ التحقق...</span>
                     </>
                   ) : (
                     <>
@@ -242,19 +184,15 @@ export default function LoginPage() {
             </form>
 
             {/* Footer */}
-            <div
-              className={`mt-8 pt-6 border-t border-oasis-800 transition-all duration-700 delay-[900ms] ${
-                mounted ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
+            <div className="mt-8 pt-6 border-t border-oasis-800/40">
               <div className="flex items-center justify-center gap-2 text-xs text-oasis-500">
-                <Shield size={14} className="text-cyan-glow/50" />
-                <span>نظام محمي — الدخول للمخولين فقط</span>
+                <ShieldCheck size={14} className="text-cyan-glow/60" />
+                <span>نظام مشمي — بوابة الدخول المعتمدة</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
