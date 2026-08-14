@@ -73,6 +73,15 @@ export default function AssetsPage() {
     Promise.all([loadAssets(), loadEmployees(), loadDepartments()]).then(() =>
       setLoading(false)
     );
+
+    if (typeof window !== 'undefined') {
+      if (window.location.search.includes('scan=true')) {
+        setShowScanner(true);
+      }
+      const handleMobileScan = () => setShowScanner(true);
+      window.addEventListener('open-mobile-scanner', handleMobileScan);
+      return () => window.removeEventListener('open-mobile-scanner', handleMobileScan);
+    }
   }, []);
 
   // Filter logic

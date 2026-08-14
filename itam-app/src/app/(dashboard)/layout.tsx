@@ -1,6 +1,7 @@
 'use client';
 
 import Sidebar from '@/components/ui/Sidebar';
+import MobileNav from '@/components/ui/MobileNav';
 import { ToastProvider } from '@/components/ui/Toast';
 import InteractiveTechBg from '@/components/ui/InteractiveTechBg';
 
@@ -14,9 +15,10 @@ export default function DashboardLayout({
       <div className="relative flex min-h-screen">
         <InteractiveTechBg />
         <Sidebar />
-        <main className="relative z-10 flex-1 transition-all duration-300 ease-in-out p-4 lg:p-8 overflow-x-hidden lg:mr-[230px]">
+        <main className="relative z-10 flex-1 transition-all duration-300 ease-in-out p-4 lg:p-8 pb-24 lg:pb-8 overflow-x-hidden lg:mr-[230px]">
           {children}
         </main>
+        <MobileNav />
       </div>
     </ToastProvider>
   );

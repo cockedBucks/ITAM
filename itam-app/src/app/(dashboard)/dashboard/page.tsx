@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { PageLoader } from '@/components/ui/LoadingSpinner';
@@ -80,6 +81,7 @@ const CustomChartTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [deptData, setDeptData] = useState<AssetsPerDepartment[]>([]);
   const [alerts, setAlerts] = useState<AttentionAlert[]>([]);
@@ -89,6 +91,12 @@ export default function DashboardPage() {
   const supabase = createClient();
 
   useEffect(() => {
+    // If opened on mobile device screen size, show camera scanner first
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      router.replace('/assets?scan=true');
+      return;
+    }
+
     async function loadDashboard() {
       try {
         const { data: statsData } = await supabase
