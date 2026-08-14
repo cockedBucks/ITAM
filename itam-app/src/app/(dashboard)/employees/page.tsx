@@ -14,6 +14,7 @@ import {
   Save,
   Monitor,
   UserPlus,
+  Search,
 } from 'lucide-react';
 import type { Department, Employee } from '@/types/database';
 
@@ -35,8 +36,20 @@ export default function EmployeesPage() {
   });
   const [deptName, setDeptName] = useState('');
 
+  const [empSearch, setEmpSearch] = useState('');
+  const [selectedDept, setSelectedDept] = useState('');
+
   const supabase = createClient();
   const { showToast } = useToast();
+
+  const filteredEmployees = employees.filter((emp) => {
+    const matchesSearch =
+      emp.name.toLowerCase().includes(empSearch.toLowerCase()) ||
+      (emp.job_title || '').toLowerCase().includes(empSearch.toLowerCase()) ||
+      (emp.email || '').toLowerCase().includes(empSearch.toLowerCase());
+    const matchesDept = !selectedDept || emp.department?.name === selectedDept;
+    return matchesSearch && matchesDept;
+  });
 
   const loadData = async () => {
     const [{ data: depts }, { data: emps }] = await Promise.all([
@@ -170,22 +183,20 @@ export default function EmployeesPage() {
       <div className="flex gap-2 border-b border-oasis-800 pb-0">
         <button
           onClick={() => setActiveTab('employees')}
-          className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'employees'
+          className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'employees'
               ? 'border-cyan-glow text-cyan-glow'
               : 'border-transparent text-oasis-400 hover:text-oasis-200'
-          }`}
+            }`}
         >
           <Users size={16} className="inline ml-2" />
           الموظفون ({employees.length})
         </button>
         <button
           onClick={() => setActiveTab('departments')}
-          className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'departments'
+          className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'departments'
               ? 'border-cyan-glow text-cyan-glow'
               : 'border-transparent text-oasis-400 hover:text-oasis-200'
-          }`}
+            }`}
         >
           <Building2 size={16} className="inline ml-2" />
           الأقسام ({departments.length})
@@ -195,14 +206,42 @@ export default function EmployeesPage() {
       {/* Employees Tab */}
       {activeTab === 'employees' && (
         <>
-          <div className="flex justify-end">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              <div className="relative w-full sm:w-64">
+                <input
+                  type="text"
+                  placeholder="بحث..."
+                  value={empSearch}
+                  onChange={(e) => setEmpSearch(e.target.value)}
+                  className="input-field pr-4 pl-10 text-right w-full"
+                  dir="rtl"
+                />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-oasis-500 pointer-events-none" />
+              </div>
+
+              <select
+                value={selectedDept}
+                onChange={(e) => setSelectedDept(e.target.value)}
+                className="select-field text-right w-full sm:w-48"
+                dir="rtl"
+              >
+                <option value="">جميع الأقسام</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.name}>{dept.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Action button */}
             <button
               onClick={() => {
                 setEditEmp(null);
                 setEmpForm({ name: '', department_id: '', job_title: '', email: '', phone: '' });
                 setShowEmpModal(true);
               }}
-              className="btn-primary"
+              className="btn-primary shrink-0 w-full md:w-auto"
             >
               <UserPlus size={16} />
               إضافة موظف
@@ -220,7 +259,7 @@ export default function EmployeesPage() {
                 </tr>
               </thead>
               <tbody>
-                {employees.map((emp) => (
+                {filteredEmployees.map((emp) => (
                   <tr key={emp.id}>
                     <td className="font-medium text-oasis-200">{emp.name}</td>
                     <td className="text-oasis-400">{emp.department?.name}</td>
@@ -315,27 +354,27 @@ export default function EmployeesPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-oasis-300 mb-2">الاسم الكامل *</label>
-              <input value={empForm.name} onChange={(e) => setEmpForm({...empForm, name: e.target.value})} className="input-field" required />
+              <input value={empForm.name} onChange={(e) => setEmpForm({ ...empForm, name: e.target.value })} className="input-field" required />
             </div>
             <div>
               <label className="block text-sm font-medium text-oasis-300 mb-2">القسم *</label>
-              <select value={empForm.department_id} onChange={(e) => setEmpForm({...empForm, department_id: e.target.value})} className="select-field">
+              <select value={empForm.department_id} onChange={(e) => setEmpForm({ ...empForm, department_id: e.target.value })} className="select-field">
                 <option value="">اختر القسم...</option>
                 {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-oasis-300 mb-2">المسمى الوظيفي</label>
-              <input value={empForm.job_title} onChange={(e) => setEmpForm({...empForm, job_title: e.target.value})} className="input-field" />
+              <input value={empForm.job_title} onChange={(e) => setEmpForm({ ...empForm, job_title: e.target.value })} className="input-field" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-oasis-300 mb-2">البريد الإلكتروني</label>
-                <input type="email" value={empForm.email} onChange={(e) => setEmpForm({...empForm, email: e.target.value})} className="input-field" dir="ltr" />
+                <input type="email" value={empForm.email} onChange={(e) => setEmpForm({ ...empForm, email: e.target.value })} className="input-field" dir="ltr" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-oasis-300 mb-2">الهاتف</label>
-                <input value={empForm.phone} onChange={(e) => setEmpForm({...empForm, phone: e.target.value})} className="input-field" dir="ltr" />
+                <input value={empForm.phone} onChange={(e) => setEmpForm({ ...empForm, phone: e.target.value })} className="input-field" dir="ltr" />
               </div>
             </div>
             <div className="flex gap-3 pt-2">

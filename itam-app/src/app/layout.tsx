@@ -1,6 +1,6 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next';
-import { Inter, IBM_Plex_Mono } from 'next/font/google';
+import { Inter, IBM_Plex_Mono, Caveat } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
@@ -16,9 +16,18 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: 'swap',
 });
 
+const caveat = Caveat({
+  subsets: ['latin'],
+  variable: '--font-caveat',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: 'Smart Oasis IT Portal — نظام إدارة الأصول التقنية',
   description: 'نظام إدارة الأصول التقنية لشركة واحة الذكاء — Smart Oasis ITAM',
+  icons: {
+    icon: '/logo.svg',
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl" className={`${inter.variable} ${ibmPlexMono.variable}`}>
+    <html lang="ar" dir="rtl" className={`${inter.variable} ${ibmPlexMono.variable} ${caveat.variable}`}>
       <body className="bg-oasis-950 text-oasis-200 antialiased min-h-screen">
         {children}
       </body>

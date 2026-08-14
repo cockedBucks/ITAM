@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   Clock,
   RefreshCw,
+  Search,
 } from 'lucide-react';
 import type { AuditLog, AssetStatus } from '@/types/database';
 import { formatDateTime, timeAgo } from '@/lib/utils';
@@ -41,7 +42,27 @@ export default function HistoryPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterAction, setFilterAction] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const supabase = createClient();
+
+  const filteredLogs = logs.filter((log) => {
+    const assetTag = (log.asset as any)?.asset_tag || '';
+    const assetInfo = `${(log.asset as any)?.brand || ''} ${(log.asset as any)?.model || ''}`;
+    const oldEmp = (log.old_employee as any)?.name || '';
+    const newEmp = (log.new_employee as any)?.name || '';
+    const note = log.note || '';
+    const action = log.action || '';
+
+    const query = searchQuery.toLowerCase();
+    return (
+      assetTag.toLowerCase().includes(query) ||
+      assetInfo.toLowerCase().includes(query) ||
+      oldEmp.toLowerCase().includes(query) ||
+      newEmp.toLowerCase().includes(query) ||
+      note.toLowerCase().includes(query) ||
+      action.toLowerCase().includes(query)
+    );
+  });
 
   const loadLogs = async () => {
     let query = supabase
@@ -98,35 +119,47 @@ export default function HistoryPage() {
             تتبع جميع عمليات التسليم والإرجاع والتغييرات
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+          {/* Search Input */}
+          <div className="relative w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="بحث..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input-field pr-4 pl-10 text-right w-full"
+              dir="rtl"
+            />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-oasis-500 pointer-events-none" />
+          </div>
+
           <select
             value={filterAction}
             onChange={(e) => setFilterAction(e.target.value)}
-            className="select-field w-auto"
+            className="select-field w-full sm:w-auto"
           >
             <option value="">جميع الحركات</option>
-            {uniqueActions.map((action) => (
+            {Object.keys(actionIcons).map((action) => (
               <option key={action} value={action}>
                 {action}
               </option>
             ))}
           </select>
-          <button onClick={() => loadLogs()} className="btn-secondary">
+          <button onClick={() => loadLogs()} className="btn-secondary shrink-0 w-full sm:w-auto">
             <RefreshCw size={16} />
             تحديث
           </button>
         </div>
       </div>
 
-      {/* Timeline */}
       <div className="space-y-3">
-        {logs.length === 0 ? (
+        {filteredLogs.length === 0 ? (
           <div className="card p-12 text-center">
             <Clock size={48} className="mx-auto text-oasis-700 mb-4" />
-            <p className="text-oasis-400">لا توجد سجلات حركة بعد</p>
+            <p className="text-oasis-400">لا توجد سجلات حركة مطابقة</p>
           </div>
         ) : (
-          logs.map((log, index) => {
+          filteredLogs.map((log, index) => {
             const Icon = actionIcons[log.action] || RefreshCw;
             const color = actionColors[log.action] || 'text-oasis-400 bg-oasis-700';
 

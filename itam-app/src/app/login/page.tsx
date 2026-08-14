@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, LogIn, Monitor, Loader2, ShieldCheck, Mail, Lock, AlertCircle } from 'lucide-react';
 import InteractiveTechBg from '@/components/ui/InteractiveTechBg';
+import Logo from '@/components/ui/Logo';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -81,16 +82,10 @@ export default function LoginPage() {
           <div className="p-8 sm:p-10">
             {/* Logo Section */}
             <div className="text-center mb-8">
-              <motion.div
-                initial={{ rotate: -15, scale: 0.5, opacity: 0 }}
-                animate={{ rotate: 0, scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
-                className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-bl from-cyan-glow to-teal-glow shadow-lg shadow-cyan-glow/20 mb-5"
-              >
-                <Monitor size={30} className="text-white" />
-              </motion.div>
-              <h1 className="text-2xl font-bold text-white mb-2">Smart Oasis IT</h1>
-              <p className="text-xs text-oasis-400">نظام إدارة الأصول التقنية — واحة الذكاء</p>
+              <div className="inline-flex items-center justify-center mb-5">
+                <Logo size={120} className="text-cyan-glow" />
+              </div>
+              <h1 className="text-2xl font-black text-white tracking-wider mb-1">ITAM</h1>
             </div>
 
             {/* Error Message */}
@@ -123,7 +118,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@smartoasis.sa"
+                    placeholder="SD@soc.iq"
                     className="w-full pr-11 pl-4 py-2.5 rounded-xl bg-oasis-950 border border-oasis-800 text-oasis-200 placeholder:text-oasis-600 text-sm focus:outline-none focus:border-cyan-glow/50 focus:ring-1 focus:ring-cyan-glow/20 transition-all duration-300"
                     required
                     autoComplete="email"
@@ -182,14 +177,6 @@ export default function LoginPage() {
                 </button>
               </div>
             </form>
-
-            {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-oasis-800/40">
-              <div className="flex items-center justify-center gap-2 text-xs text-oasis-500">
-                <ShieldCheck size={14} className="text-cyan-glow/60" />
-                <span>نظام مشمي — بوابة الدخول المعتمدة</span>
-              </div>
-            </div>
           </div>
         </div>
       </motion.div>

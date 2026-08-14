@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/components/ui/Toast';
 import Modal from '@/components/ui/Modal';
 import StatusBadge from '@/components/ui/StatusBadge';
+import EmployeeSelect from '@/components/ui/EmployeeSelect';
 import type { Asset, Employee } from '@/types/database';
 import { ASSET_TYPE_AR } from '@/types/database';
 import { ArrowRightLeft, UserCheck, RotateCcw } from 'lucide-react';
@@ -85,22 +86,22 @@ export default function AssignModal({
       isOpen={true}
       onClose={onClose}
       title="تسليم وإرجاع الجهاز"
-      size="md"
+      size="lg"
     >
-      {/* Asset Info */}
-      <div className="card p-4 mb-6">
-        <div className="flex items-center justify-between mb-3">
+      {/* Asset Info Header */}
+      <div className="card p-4 mb-4">
+        <div className="flex items-center justify-between mb-2">
           <span className="mono-tag text-base font-bold">{asset.asset_tag}</span>
           <StatusBadge status={asset.status} />
         </div>
-        <div className="grid grid-cols-2 gap-2 text-sm">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div>
             <span className="text-oasis-500">النوع: </span>
-            <span className="text-oasis-200">{ASSET_TYPE_AR[asset.type]}</span>
+            <span className="text-oasis-200 font-medium">{ASSET_TYPE_AR[asset.type]}</span>
           </div>
           <div>
             <span className="text-oasis-500">العلامة: </span>
-            <span className="text-oasis-200">{asset.brand} {asset.model}</span>
+            <span className="text-oasis-200 font-medium">{asset.brand} {asset.model}</span>
           </div>
           <div>
             <span className="text-oasis-500">التسلسلي: </span>
@@ -109,7 +110,7 @@ export default function AssignModal({
           {asset.employee && (
             <div>
               <span className="text-oasis-500">المسلّم إليه: </span>
-              <span className="text-oasis-200">{asset.employee.name}</span>
+              <span className="text-cyan-300 font-bold">{asset.employee.name}</span>
             </div>
           )}
         </div>
@@ -118,22 +119,31 @@ export default function AssignModal({
       {/* Action Section */}
       {isAssigned ? (
         <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
-            <p className="text-sm text-amber-400">
-              هذا الجهاز مسلّم حالياً إلى <strong>{asset.employee?.name}</strong>.
-              يمكنك إرجاعه أو نقله لموظف آخر.
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs">
+            <p className="text-amber-300">
+              هذا الجهاز مسلّم حالياً إلى <strong className="text-white">{asset.employee?.name}</strong>.
+              يمكنك إرجاعه للمخزن أو اختيار موظف جديد لنقل ملكية الجهاز إليه.
             </p>
           </div>
 
+          <EmployeeSelect
+            employees={employees}
+            selectedId={selectedEmployee}
+            onSelect={setSelectedEmployee}
+            label="اختر موظفاً لنقل الجهاز إليه"
+            excludeId={asset.employee_id || undefined}
+            maxItems={4}
+          />
+
           <div>
-            <label className="block text-sm font-medium text-oasis-300 mb-2">
+            <label className="block text-xs font-semibold text-oasis-300 mb-1.5">
               ملاحظات (اختياري)
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="ملاحظات عن الإرجاع..."
-              className="input-field h-20 resize-none"
+              placeholder="ملاحظات عن عملية النقل أو الإرجاع..."
+              className="input-field h-16 text-xs resize-none"
             />
           </div>
 
@@ -141,83 +151,53 @@ export default function AssignModal({
             <button
               onClick={handleReturn}
               disabled={loading}
-              className="btn-secondary flex-1"
+              className="btn-secondary flex-1 py-2.5 text-xs font-bold"
             >
               <RotateCcw size={16} />
-              إرجاع الجهاز
+              إرجاع الجهاز للمخزن
             </button>
             <button
               onClick={() => {
-                if (selectedEmployee) handleAssign();
-                else showToast('اختر موظفاً لنقل الجهاز إليه', 'warning');
+                if (selectedEmployee && selectedEmployee !== asset.employee_id) handleAssign();
+                else showToast('اختر موظفاً آخر لنقل الجهاز إليه', 'warning');
               }}
-              disabled={loading || !selectedEmployee}
-              className="btn-primary flex-1"
+              disabled={loading || !selectedEmployee || selectedEmployee === asset.employee_id}
+              className="btn-primary flex-1 py-2.5 text-xs font-bold"
             >
               <ArrowRightLeft size={16} />
-              نقل لموظف آخر
+              تأكيد نقل الجهاز
             </button>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-oasis-300 mb-2">
-              نقل إلى موظف آخر
-            </label>
-            <select
-              value={selectedEmployee}
-              onChange={(e) => setSelectedEmployee(e.target.value)}
-              className="select-field"
-            >
-              <option value="">اختر الموظف...</option>
-              {employees
-                .filter((emp) => emp.id !== asset.employee_id)
-                .map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.name} — {emp.department?.name}
-                  </option>
-                ))}
-            </select>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-oasis-300 mb-2">
-              تسليم إلى
-            </label>
-            <select
-              value={selectedEmployee}
-              onChange={(e) => setSelectedEmployee(e.target.value)}
-              className="select-field"
-            >
-              <option value="">اختر الموظف...</option>
-              {employees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.name} — {emp.department?.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <EmployeeSelect
+            employees={employees}
+            selectedId={selectedEmployee}
+            onSelect={setSelectedEmployee}
+            label="تسليم الجهاز إلى موظف"
+            maxItems={4}
+          />
 
           <div>
-            <label className="block text-sm font-medium text-oasis-300 mb-2">
+            <label className="block text-xs font-semibold text-oasis-300 mb-1.5">
               ملاحظات (اختياري)
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="ملاحظات عن التسليم..."
-              className="input-field h-20 resize-none"
+              placeholder="ملاحظات عن تسليم الجهاز..."
+              className="input-field h-16 text-xs resize-none"
             />
           </div>
 
           <button
             onClick={handleAssign}
             disabled={loading || !selectedEmployee}
-            className="btn-primary w-full"
+            className="btn-primary w-full py-2.5 text-xs font-bold"
           >
             <UserCheck size={16} />
-            تسليم الجهاز
+            تأكيد تسليم الجهاز
           </button>
         </div>
       )}

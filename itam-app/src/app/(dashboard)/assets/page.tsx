@@ -152,23 +152,25 @@ export default function AssetsPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="relative">
-            <Search
-              size={16}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-oasis-500"
-            />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="بحث بالاسم، الرقم التسلسلي، رقم الأصل..."
-              className="input-field pr-10"
+              placeholder="بحث..."
+              className="input-field pr-4 pl-10 text-right w-full"
+              dir="rtl"
+            />
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-oasis-500 pointer-events-none"
             />
           </div>
 
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="select-field"
+            className="select-field text-right"
+            dir="rtl"
           >
             <option value="">جميع الأنواع</option>
             {Object.entries(ASSET_TYPE_AR).map(([key, label]) => (
@@ -181,7 +183,8 @@ export default function AssetsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="select-field"
+            className="select-field text-right"
+            dir="rtl"
           >
             <option value="">جميع الحالات</option>
             {Object.entries(ASSET_STATUS_AR).map(([key, label]) => (
@@ -194,7 +197,8 @@ export default function AssetsPage() {
           <select
             value={filterDept}
             onChange={(e) => setFilterDept(e.target.value)}
-            className="select-field"
+            className="select-field text-right"
+            dir="rtl"
           >
             <option value="">جميع الأقسام</option>
             {departments.map((dept) => (

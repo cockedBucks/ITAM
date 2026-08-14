@@ -1,7 +1,8 @@
+'use client';
+
 import Sidebar from '@/components/ui/Sidebar';
 import { ToastProvider } from '@/components/ui/Toast';
-
-export const dynamic = 'force-dynamic';
+import InteractiveTechBg from '@/components/ui/InteractiveTechBg';
 
 export default function DashboardLayout({
   children,
@@ -10,9 +11,10 @@ export default function DashboardLayout({
 }) {
   return (
     <ToastProvider>
-      <div className="flex min-h-screen">
+      <div className="relative flex min-h-screen">
+        <InteractiveTechBg />
         <Sidebar />
-        <main className="flex-1 lg:mr-[280px] p-4 lg:p-8 overflow-x-hidden">
+        <main className="relative z-10 flex-1 transition-all duration-300 ease-in-out p-4 lg:p-8 overflow-x-hidden lg:mr-[230px]">
           {children}
         </main>
       </div>

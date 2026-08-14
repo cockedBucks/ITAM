@@ -1,9 +1,9 @@
-// src/middleware.ts
-// Next.js middleware — auth protection for all routes
+// src/proxy.ts
+// Next.js 16 proxy — auth protection for all routes
 import { type NextRequest } from 'next/server';
 import { updateSession } from './lib/supabase/middleware';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }
 
